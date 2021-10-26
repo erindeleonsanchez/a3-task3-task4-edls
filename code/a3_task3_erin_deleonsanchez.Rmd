@@ -1,0 +1,26 @@
+---
+title: "Assignment 3 - Task 3"
+author: "Erin de Leon Sanchez"
+date: "10/26/2021"
+output: html_document
+---
+
+# Overview
+In this task, I use version control, project management, and data wrangling, analysis & visualization skills to explore red and purple urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers, while practicing version control and project management.
+
+Data citation: Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+
+# Set up 
+```{r setup, include = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(here)
+```
+
+# Read in data 
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+```
+
