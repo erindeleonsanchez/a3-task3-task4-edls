@@ -17,6 +17,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(here)
+library(kableExtra)
+library(lubridate)
 ```
 
 # Read in data 
@@ -24,10 +26,10 @@ library(here)
 urchins <- read_csv(here("data", "urchins.csv"))
 ```
 
-## Section 1: 
+# Section 1: 
 Size comparisons, purple and red urchins (include data from all sites, and for both treatments - i.e. ignore those variables here)
 
-# Data visualization: 
+## i. Data visualization: 
 Compare the distribution of sizes between purple and red urchins with a finalized, faceted histogram. You will probably want to reduce the number of bins (default is 30...we recommend closer to 10 here). Finalize your graphs and add a figure caption.
 
 ```{r}
@@ -35,6 +37,52 @@ ggplot(data = urchins, aes(x = SIZE, fill = COMMON_NAME)) +
   scale_fill_manual(values = c("purple", "red"), name = "Species") +
   geom_histogram(bins = 10) +
   facet_wrap(~ COMMON_NAME) + 
-  labs(x = "Diameter (cm)", y = "Count")
+  labs(x = "Diameter (cm)", y = "Count", title = "Urchin size distribution", caption = "Data from Santa Barbara Coastal Long Term Ecological Research") 
+#(SBC LTER) Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. These data are for red and purple urchins observed at five sites along the Santa Barbara Coast"
+# How do I get the entire caption to fit??
+```
+
+## ii. Descriptive statistics table: 
+Create a finalized summary table that contains the following statistics for purple and red urchins (still ignoring site as a variable, but including species as a grouping variable): mean, median, standard deviation, and sample size. Use kableExtra (or another package for tables in R) to finalize your table for your knitted document. Add a table caption above your table. Some things to consider:
+Are the values a reasonable number of significant figures?
+Have you updated column names to be finalized (with units?)
+
+```{r}
+size_summary <- urchins %>% 
+  group_by(COMMON_NAME, TREATMENT) %>% 
+  summarize(mean_size = mean(SIZE, na.rm = TRUE),
+            median_size = median(SIZE, na.rm = TRUE),
+            sd_size = sd(SIZE, na.rm = TRUE),
+            sample_size = n()
+            )
+
+kable(size_summary, col.names = c("Common name", "Treatment", "Mean size (cm)", "Median size (cm)", "Standard deviation (cm)", "Sample size (n)"), digits = 1, caption = "Summary statistics for SBC-LTER data for purple and red urchins") %>% 
+  kable_classic()
+```
+
+#2 - 3 sentences briefly describing your overall takeaways about how the size (distribution, central tendency, spread, etc.) compare between the two species of urchins (again, here we are ignoring site and treatment as a variable). Help to contextualize any differences you observe - for example, what is the actual and % difference in mean urchin diameter between the species? 
+
+# Section 2
+Explore purple urchin counts by site and year
+
+In a piped sequence (remember to check the output after every step), create stored subset of the urchins data called purple_urchins in which you: 
+Filter to only include observations for purple urchins
+Convert the date to class “Date” 
+Create a new column that only contains the year
+Create a new column called site_full that contains the full name (not abbreviation) for each of the five sites: NAPL = Naples Reef, AQUE = Arroyo Quemado Reef, CARP = Carpinteria Reef, MOHK = Mohawk Reef, IVEE = Isla Vista Reef. 
+
+```{r}
+purple_urchins <- urchins %>%   
+  filter(COMMON_NAME %in% "Purple Urchin") %>%
+  mutate(DATE_NEW = as_date(purple_urchins$DATE, format="%m/%d/%y")) %>% 
+  mutate(YEAR = year(DATE_NEW)) %>% 
+  mutate(site_full = case_when(
+    SITE == "NAPL"  ~ "Naples", 
+    SITE == "AQUE" ~ "Arroyo Quemado",
+    SITE == "CARP" ~ "Carpinteria Reef", 
+    SITE == "MOHK" ~ "Mohawk Reef", 
+    SITE == "IVEE" ~ "Isla Vista Reef")
+  )
+
 ```
 
