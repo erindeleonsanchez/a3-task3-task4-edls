@@ -24,3 +24,17 @@ library(here)
 urchins <- read_csv(here("data", "urchins.csv"))
 ```
 
+## Section 1: 
+Size comparisons, purple and red urchins (include data from all sites, and for both treatments - i.e. ignore those variables here)
+
+# Data visualization: 
+Compare the distribution of sizes between purple and red urchins with a finalized, faceted histogram. You will probably want to reduce the number of bins (default is 30...we recommend closer to 10 here). Finalize your graphs and add a figure caption.
+
+```{r}
+ggplot(data = urchins, aes(x = SIZE, fill = COMMON_NAME)) +
+  scale_fill_manual(values = c("purple", "red"), name = "Species") +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ COMMON_NAME) + 
+  labs(x = "Diameter (cm)", y = "Count")
+```
+
