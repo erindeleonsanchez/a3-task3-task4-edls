@@ -1,0 +1,68 @@
+---
+title: "Assignment 3 - Task 4 Naples Reef (2010*) purple urchins"
+author: "Erin de Leon Sanchez"
+date: "10/28/2021"
+output: html_document
+---
+# Set up
+```{r setup, include = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(here)
+```
+
+# Read in urchin data
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+```
+
+# Data wrangling
+Here, I wrangle the urchins data to only include Naples Reef observations for purple urchins observed in 2010. 
+
+```{r}
+naples_purple_2010 <- urchins %>%
+  filter(COMMON_NAME %in% "Purple Urchin") %>%
+  filter(SITE %in% "NAPL") %>% 
+  mutate(DATE_NEW = as_date(DATE, format="%m/%d/%y")) %>% 
+  mutate(YEAR = year(DATE_NEW)) %>% 
+  filter(YEAR %in% "2010")
+```
+
+# Exploratory visualization
+Here, I look at faceted histograms and QQ-plots for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality.
+
+```{r}
+ggplot(data = naples_purple_2010, aes(x = SIZE)) +
+  geom_histogram() +
+  facet_wrap(~ TREATMENT) +
+  labs(x = "Diameter (cm)", y = "Number of urchins", title = "Purple urchin size distribution at Naples Reef in 2010") 
+```
+
+Based on the histogram, the urchin size distribution appears to be skewed left for both treatments due to a greater number of smaller urchins. There are also a few outliers of larger urchins in each treatment. 
+
+```{r}
+ggplot(data = naples_purple_2010, aes(sample=SIZE)) +
+  geom_qq() + 
+  geom_qq_line() +
+  facet_wrap(~ TREATMENT) +
+  labs(x = "Diameter (cm)", y = "Number of urchins", title = "Purple urchin size distribution at Naples Reef in 2010") 
+```
+
+Unlike what the histogram shows, here, the distribution of urchin size for each treatment appears to follow normality. 
+
+# Summary statistics 
+Here, I create a finalized basic summary table (with table caption above) of descriptive statistics for both groups.
+```{r}
+summary <- naples_purple_2010 %>% 
+  group_by(TREATMENT) %>% 
+  summarize(mean_size = mean(SIZE, na.rm = TRUE),
+            median_size = median(SIZE, na.rm = TRUE),
+            sd_size = sd(SIZE, na.rm = TRUE),
+            sample_size = n()
+            )
+kable(summary, col.names = c("Treatment", "Mean size (cm)", "Median size (cm)", "Standard deviation (cm)", "Sample size (n)"), digits = 1, caption = "Summary statistics for SBC-LTER data for purple urchins at Naples Reef in 2010") %>% 
+kable_classic()
+```
+

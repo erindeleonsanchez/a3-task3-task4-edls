@@ -19,7 +19,6 @@ library(tidyverse)
 library(here)
 library(kableExtra)
 library(lubridate)
-library(janitor)
 ```
 
 # Read in data 
@@ -39,7 +38,7 @@ ggplot(data = urchins, aes(x = SIZE, fill = COMMON_NAME)) +
   scale_x_continuous(expand = c(0, 0)) +
   geom_histogram(bins = 10) +
   facet_wrap(~ COMMON_NAME) + 
-  labs(x = "Diameter (cm)", y = "Count", title = "Urchin size distribution", caption = "Data from Santa Barbara Coastal Long Term Ecological Research") 
+  labs(x = "Diameter (cm)", y = "Number of urchins", title = "Urchin size distribution", caption = "Data from Santa Barbara Coastal Long Term Ecological Research") 
 ```
 
 ## ii. Descriptive statistics table: 
